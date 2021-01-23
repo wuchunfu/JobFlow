@@ -1,0 +1,37 @@
+# mysql
+db:
+  engine: mysql
+  host: 127.0.0.1
+  port: 3306
+  username: root
+  password: root
+  database: test
+  prefix: gin_
+  charset: utf8mb4
+  maxIdleConns: 5
+  maxOpenConns: 100
+
+# system configuration
+system:
+  # service listening address
+  host: :1060
+  allowIps:
+  appName: 定时任务管理系统
+  concurrencyQueue: 500
+  apiSignEnable: false
+  apiKey:
+  apiSecret:
+  authSecret: bf63c8c79159f7729b44d6e82d0d705543ad69de4aa282ad2c0c755379141c09
+  enableTls: false
+  caFile:
+  certFile:
+  keyFile:
+
+# logger configuration
+log:
+  # file path
+  path: ./logs
+  # file name
+  name: fileserver.log
+  # log level
+  level: INFO

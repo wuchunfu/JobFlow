@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package rpc;
+
+service Task {
+  rpc Run(TaskRequest) returns (TaskResponse) {}
+}
+
+message TaskRequest {
+  string command = 2; // 命令
+  int32 timeout = 3;  // 任务执行超时时间
+  int64 id = 4; // 执行任务唯一ID
+}
+
+message TaskResponse {
+  string output = 1; // 命令标准输出
+  string error = 2;  // 命令错误
+}
