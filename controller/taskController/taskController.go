@@ -1,15 +1,15 @@
 package taskController
 
 import (
-	"gin-vue/common"
-	"gin-vue/model/hostModel"
-	"gin-vue/model/taskHostModel"
-	"gin-vue/model/taskModel"
-	"gin-vue/service/taskService"
-	"gin-vue/utils"
-	"gin-vue/utils/datetimeUtils"
 	"github.com/gin-gonic/gin"
 	"github.com/robfig/cron/v3"
+	"github.com/wuchunfu/JobFlow/common"
+	"github.com/wuchunfu/JobFlow/model/hostModel"
+	"github.com/wuchunfu/JobFlow/model/taskHostModel"
+	"github.com/wuchunfu/JobFlow/model/taskModel"
+	"github.com/wuchunfu/JobFlow/service/taskService"
+	"github.com/wuchunfu/JobFlow/utils"
+	"github.com/wuchunfu/JobFlow/utils/datetimeUtils"
 	"net/http"
 	"strconv"
 	"strings"

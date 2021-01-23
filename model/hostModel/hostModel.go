@@ -1,8 +1,8 @@
 package hostModel
 
 import (
-	"gin-vue/middleware/database"
 	logger "github.com/sirupsen/logrus"
+	"github.com/wuchunfu/JobFlow/middleware/database"
 )
 
 // 用户model

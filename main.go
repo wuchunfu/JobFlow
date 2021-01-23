@@ -1,11 +1,11 @@
 package main
 
 import (
-	"gin-vue/config"
-	"gin-vue/middleware/database"
-	"gin-vue/routers"
-	"gin-vue/service/taskService"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/wuchunfu/JobFlow/config"
+	"github.com/wuchunfu/JobFlow/middleware/database"
+	"github.com/wuchunfu/JobFlow/routers"
+	"github.com/wuchunfu/JobFlow/service/taskService"
 )
 
 func main() {

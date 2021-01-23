@@ -1,10 +1,10 @@
 package mail
 
 import (
-	"gin-vue/middleware/notify/notify"
-	"gin-vue/model/settingModel"
-	"gin-vue/utils"
 	"github.com/sirupsen/logrus"
+	"github.com/wuchunfu/JobFlow/middleware/notify/notify"
+	"github.com/wuchunfu/JobFlow/model/settingModel"
+	"github.com/wuchunfu/JobFlow/utils"
 	"gopkg.in/gomail.v2"
 	"strconv"
 	"strings"

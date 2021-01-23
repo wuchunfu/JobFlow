@@ -2,7 +2,7 @@ package windowsUtils
 
 import (
 	"errors"
-	"gin-vue/utils"
+	"github.com/wuchunfu/JobFlow/utils"
 	"os/exec"
 	"strconv"
 	"syscall"

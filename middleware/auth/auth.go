@@ -1,10 +1,10 @@
 package auth
 
 import (
-	"gin-vue/middleware/database"
-	"gin-vue/middleware/jwt"
-	"gin-vue/model/userModel"
 	"github.com/gin-gonic/gin"
+	"github.com/wuchunfu/JobFlow/middleware/database"
+	"github.com/wuchunfu/JobFlow/middleware/jwt"
+	"github.com/wuchunfu/JobFlow/model/userModel"
 	"net/http"
 	"strings"
 )

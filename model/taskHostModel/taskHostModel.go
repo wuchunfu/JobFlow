@@ -1,8 +1,8 @@
 package taskHostModel
 
 import (
-	"gin-vue/middleware/database"
 	logger "github.com/sirupsen/logrus"
+	"github.com/wuchunfu/JobFlow/middleware/database"
 )
 
 type TaskHost struct {

@@ -1,9 +1,9 @@
 package userModel
 
 import (
-	"gin-vue/common"
-	"gin-vue/middleware/database"
 	logger "github.com/sirupsen/logrus"
+	"github.com/wuchunfu/JobFlow/common"
+	"github.com/wuchunfu/JobFlow/middleware/database"
 )
 
 // 用户model

@@ -1,10 +1,10 @@
 package taskLogModel
 
 import (
-	"gin-vue/common"
-	"gin-vue/middleware/database"
-	"gin-vue/utils/datetimeUtils"
 	"github.com/sirupsen/logrus"
+	"github.com/wuchunfu/JobFlow/common"
+	"github.com/wuchunfu/JobFlow/middleware/database"
+	"github.com/wuchunfu/JobFlow/utils/datetimeUtils"
 	"time"
 )
 

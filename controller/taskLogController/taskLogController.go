@@ -1,9 +1,9 @@
 package taskLogController
 
 import (
-	"gin-vue/common"
-	"gin-vue/model/taskLogModel"
 	"github.com/gin-gonic/gin"
+	"github.com/wuchunfu/JobFlow/common"
+	"github.com/wuchunfu/JobFlow/model/taskLogModel"
 	"net/http"
 )
 

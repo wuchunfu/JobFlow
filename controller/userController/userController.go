@@ -1,15 +1,15 @@
 package userController
 
 import (
-	"gin-vue/common"
-	"gin-vue/middleware/jwt"
-	"gin-vue/model/loginLogModel"
-	"gin-vue/model/tokenModel"
-	"gin-vue/model/userModel"
-	"gin-vue/utils"
-	"gin-vue/utils/datetimeUtils"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
+	"github.com/wuchunfu/JobFlow/common"
+	"github.com/wuchunfu/JobFlow/middleware/jwt"
+	"github.com/wuchunfu/JobFlow/model/loginLogModel"
+	"github.com/wuchunfu/JobFlow/model/tokenModel"
+	"github.com/wuchunfu/JobFlow/model/userModel"
+	"github.com/wuchunfu/JobFlow/utils"
+	"github.com/wuchunfu/JobFlow/utils/datetimeUtils"
 	"net/http"
 	"strconv"
 	"strings"

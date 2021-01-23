@@ -1,9 +1,9 @@
 package tokenModel
 
 import (
-	"gin-vue/middleware/database"
-	"gin-vue/utils/datetimeUtils"
 	logger "github.com/sirupsen/logrus"
+	"github.com/wuchunfu/JobFlow/middleware/database"
+	"github.com/wuchunfu/JobFlow/utils/datetimeUtils"
 )
 
 // 用户model

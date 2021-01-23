@@ -2,8 +2,8 @@ package settingModel
 
 import (
 	"encoding/json"
-	"gin-vue/middleware/database"
 	"github.com/sirupsen/logrus"
+	"github.com/wuchunfu/JobFlow/middleware/database"
 )
 
 type Setting struct {

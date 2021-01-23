@@ -2,9 +2,9 @@ package database
 
 import (
 	"fmt"
-	"gin-vue/config"
 	"github.com/jinzhu/gorm"
 	logger "github.com/sirupsen/logrus"
+	"github.com/wuchunfu/JobFlow/config"
 	"strings"
 	"time"
 )

@@ -1,10 +1,10 @@
 package taskModel
 
 import (
-	"gin-vue/common"
-	"gin-vue/middleware/database"
-	"gin-vue/model/taskHostModel"
 	logger "github.com/sirupsen/logrus"
+	"github.com/wuchunfu/JobFlow/common"
+	"github.com/wuchunfu/JobFlow/middleware/database"
+	"github.com/wuchunfu/JobFlow/model/taskHostModel"
 	"strings"
 	//"github.com/robfig/cron/v3"
 )

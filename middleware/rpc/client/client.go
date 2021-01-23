@@ -3,9 +3,9 @@ package client
 import (
 	"errors"
 	"fmt"
-	"gin-vue/middleware/rpc/grpcpool"
-	pb "gin-vue/middleware/rpc/proto"
 	"github.com/sirupsen/logrus"
+	"github.com/wuchunfu/JobFlow/middleware/rpc/grpcpool"
+	pb "github.com/wuchunfu/JobFlow/middleware/rpc/proto"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"

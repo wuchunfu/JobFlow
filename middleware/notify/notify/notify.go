@@ -3,10 +3,10 @@ package notify
 import (
 	"bytes"
 	"fmt"
-	mail2 "gin-vue/middleware/notify/mail"
-	slack2 "gin-vue/middleware/notify/slack"
-	"gin-vue/middleware/notify/webhook"
 	"github.com/sirupsen/logrus"
+	mail2 "github.com/wuchunfu/JobFlow/middleware/notify/mail"
+	slack2 "github.com/wuchunfu/JobFlow/middleware/notify/slack"
+	"github.com/wuchunfu/JobFlow/middleware/notify/webhook"
 	"html/template"
 	"time"
 )

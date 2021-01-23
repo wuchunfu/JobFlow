@@ -1,16 +1,16 @@
 package routers
 
 import (
-	"gin-vue/controller/hostController"
-	"gin-vue/controller/loginLogController"
-	"gin-vue/controller/taskController"
-	"gin-vue/controller/taskLogController"
-	"gin-vue/controller/userController"
-	"gin-vue/controller/websocketController"
-	"gin-vue/middleware/cors"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
+	"github.com/wuchunfu/JobFlow/controller/hostController"
+	"github.com/wuchunfu/JobFlow/controller/loginLogController"
+	"github.com/wuchunfu/JobFlow/controller/taskController"
+	"github.com/wuchunfu/JobFlow/controller/taskLogController"
+	"github.com/wuchunfu/JobFlow/controller/userController"
+	"github.com/wuchunfu/JobFlow/controller/websocketController"
+	"github.com/wuchunfu/JobFlow/middleware/cors"
 )
 
 func InitRouter() *gin.Engine {

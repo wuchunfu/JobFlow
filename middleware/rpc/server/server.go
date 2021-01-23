@@ -1,9 +1,9 @@
 package server
 
 import (
-	"gin-vue/middleware/rpc/auth"
-	pb "gin-vue/middleware/rpc/proto"
-	"gin-vue/utils/unixUtils"
+	"github.com/wuchunfu/JobFlow/middleware/rpc/auth"
+	pb "github.com/wuchunfu/JobFlow/middleware/rpc/proto"
+	"github.com/wuchunfu/JobFlow/utils/unixUtils"
 	"net"
 	"os"
 	"os/signal"

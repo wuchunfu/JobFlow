@@ -2,10 +2,10 @@ package main
 
 import (
 	"flag"
-	"gin-vue/middleware/rpc/auth"
-	"gin-vue/middleware/rpc/server"
-	"gin-vue/utils/fileUtils"
 	"github.com/sirupsen/logrus"
+	"github.com/wuchunfu/JobFlow/middleware/rpc/auth"
+	"github.com/wuchunfu/JobFlow/middleware/rpc/server"
+	"github.com/wuchunfu/JobFlow/utils/fileUtils"
 	"log"
 	"os"
 	"runtime"

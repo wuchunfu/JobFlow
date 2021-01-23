@@ -1,4 +1,4 @@
-module gin-vue
+module github.com/wuchunfu/JobFlow
 
 go 1.15
 

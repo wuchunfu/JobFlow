@@ -1,9 +1,9 @@
 package loginLogController
 
 import (
-	"gin-vue/common"
-	"gin-vue/model/loginLogModel"
 	"github.com/gin-gonic/gin"
+	"github.com/wuchunfu/JobFlow/common"
+	"github.com/wuchunfu/JobFlow/model/loginLogModel"
 	"net/http"
 )
 
