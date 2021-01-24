@@ -121,6 +121,7 @@ func Save(ctx *gin.Context) {
 	notifyKeyword := strings.TrimSpace(form.NotifyKeyword)
 	taskTag := strings.TrimSpace(form.TaskTag)
 	taskRemark := strings.TrimSpace(form.TaskRemark)
+	taskStatus := form.TaskStatus
 
 	task := new(taskModel.Task)
 	taskNameCount := task.IsExistsTaskName(taskName)
@@ -149,20 +150,17 @@ func Save(ctx *gin.Context) {
 		task.IsMultiInstance = isMultiInstance
 		task.RetryTimes = retryTimes
 		task.RetryInterval = retryInterval
-		task.NotifyStatus = notifyStatus - 1
-		task.NotifyType = notifyType - 1
+		task.NotifyStatus = notifyStatus
+		task.NotifyType = notifyType
 		task.NotifyReceiverId = notifyReceiverId
 		task.NotifyKeyword = notifyKeyword
 		task.TaskTag = taskTag
 		task.TaskRemark = taskRemark
-		task.TaskStatus = common.Running
+		task.TaskStatus = taskStatus
 		task.CreateTime = datetimeUtils.FormatDateTime()
 		task.UpdateTime = datetimeUtils.FormatDateTime()
 
-		if task.IsMultiInstance != 1 {
-			task.IsMultiInstance = 0
-		}
-		if task.NotifyStatus > 0 && task.NotifyType != 3 && task.NotifyReceiverId == "" {
+		if task.NotifyStatus > 1 && task.NotifyType != 3 && task.NotifyReceiverId == "" {
 			ctx.JSON(http.StatusOK, gin.H{
 				"code": http.StatusBadRequest,
 				"data": nil,
@@ -235,7 +233,170 @@ func Save(ctx *gin.Context) {
 			}
 		}
 
-		taskId := task.Save()
+		saveId := task.Save()
+
+		if saveId < 0 {
+			ctx.JSON(http.StatusOK, gin.H{
+				"code": http.StatusOK,
+				"data": nil,
+				"msg":  "操作失败！",
+			})
+		}
+
+		taskHost := new(taskHostModel.TaskHost)
+		if form.Protocol == taskModel.TaskRPC {
+			hostIdStrList := strings.Split(form.HostId, ",")
+			hostIds := make([]int, len(hostIdStrList))
+			for i, hostIdStr := range hostIdStrList {
+				hostIds[i], _ = strconv.Atoi(hostIdStr)
+			}
+			taskHost.Save(saveId, hostIds)
+		} else {
+			taskHost.Delete(saveId)
+		}
+
+		status := task.GetStatus(saveId)
+		if status == common.Enabled && task.TaskLevel == taskModel.TaskLevelParent {
+			addTaskToTimer(saveId)
+		}
+
+		ctx.JSON(http.StatusOK, gin.H{
+			"code": http.StatusOK,
+			"data": nil,
+			"msg":  "保存成功！",
+		})
+	}
+}
+
+func Update(ctx *gin.Context) {
+	form := new(TaskForm)
+	ctx.Bind(form)
+	taskId := form.TaskId
+	taskName := strings.TrimSpace(form.TaskName)
+	taskLevel := form.TaskLevel
+	dependencyTaskId := strings.TrimSpace(form.DependencyTaskId)
+	dependencyStatus := form.DependencyStatus
+	cronExpression := strings.TrimSpace(form.CronExpression)
+	protocol := form.Protocol
+	httpMethod := form.HttpMethod
+	command := strings.TrimSpace(form.Command)
+	timeout := form.Timeout
+	isMultiInstance := form.IsMultiInstance
+	retryTimes := form.RetryTimes
+	retryInterval := form.RetryInterval
+	notifyStatus := form.NotifyStatus
+	notifyType := form.NotifyType
+	notifyReceiverId := strings.TrimSpace(form.NotifyReceiverId)
+	notifyKeyword := strings.TrimSpace(form.NotifyKeyword)
+	taskTag := strings.TrimSpace(form.TaskTag)
+	taskRemark := strings.TrimSpace(form.TaskRemark)
+	taskStatus := form.TaskStatus
+
+	task := new(taskModel.Task)
+	if form.Protocol == taskModel.TaskRPC && form.HostId == "" {
+		ctx.JSON(http.StatusOK, gin.H{
+			"code": http.StatusBadRequest,
+			"data": nil,
+			"msg":  "请选择主机名！",
+		})
+	} else {
+		taskMap := make(map[string]interface{})
+		taskMap["task_id"] = taskId
+		taskMap["task_name"] = taskName
+		taskMap["task_level"] = taskLevel
+		taskMap["dependency_task_id"] = dependencyTaskId
+		taskMap["dependency_status"] = dependencyStatus
+		taskMap["cron_expression"] = cronExpression
+		taskMap["protocol"] = protocol
+		taskMap["http_method"] = httpMethod
+		taskMap["command"] = command
+		taskMap["timeout"] = timeout
+		taskMap["is_multi_instance"] = isMultiInstance
+		taskMap["retry_times"] = retryTimes
+		taskMap["retry_interval"] = retryInterval
+		taskMap["notify_status"] = notifyStatus
+		taskMap["notify_type"] = notifyType
+		taskMap["notify_receiverId"] = notifyReceiverId
+		taskMap["notify_keyword"] = notifyKeyword
+		taskMap["task_tag"] = taskTag
+		taskMap["task_remark"] = taskRemark
+		taskMap["task_status"] = taskStatus
+		taskMap["update_time"] = datetimeUtils.FormatDateTime()
+
+		if task.NotifyStatus > 1 && task.NotifyType != 3 && task.NotifyReceiverId == "" {
+			ctx.JSON(http.StatusOK, gin.H{
+				"code": http.StatusBadRequest,
+				"data": nil,
+				"msg":  "至少选择一个通知接收者！",
+			})
+		}
+		if task.Protocol == taskModel.TaskHTTP {
+			command := strings.ToLower(task.Command)
+			if !strings.HasPrefix(command, "http://") && !strings.HasPrefix(command, "https://") {
+				ctx.JSON(http.StatusOK, gin.H{
+					"code": http.StatusBadRequest,
+					"data": nil,
+					"msg":  "请输入正确的URL地址！",
+				})
+			}
+			if task.Timeout > 300 {
+				ctx.JSON(http.StatusOK, gin.H{
+					"code": http.StatusBadRequest,
+					"data": nil,
+					"msg":  "HTTP任务超时时间不能超过300秒！",
+				})
+			}
+		}
+		if task.RetryTimes > 10 || task.RetryTimes < 0 {
+			ctx.JSON(http.StatusOK, gin.H{
+				"code": http.StatusBadRequest,
+				"data": nil,
+				"msg":  "任务重试次数取值0-10！",
+			})
+		}
+		if task.RetryInterval > 3600 || task.RetryInterval < 0 {
+			ctx.JSON(http.StatusOK, gin.H{
+				"code": http.StatusBadRequest,
+				"data": nil,
+				"msg":  "任务重试间隔时间取值0-3600！",
+			})
+		}
+
+		if task.TaskLevel == taskModel.TaskLevelParent {
+			err := utils.PanicToError(func() {
+				cron.ParseStandard(form.CronExpression)
+			})
+			if err != nil {
+				ctx.JSON(http.StatusOK, gin.H{
+					"code": http.StatusBadRequest,
+					"data": nil,
+					"msg":  "crontab表达式解析失败！",
+				})
+			}
+		} else {
+			task.DependencyTaskId = ""
+			task.CronExpression = ""
+		}
+		if taskId > 0 && task.DependencyTaskId != "" {
+			dependencyTaskIds := strings.Split(task.DependencyTaskId, ",")
+			if utils.InStringSlice(dependencyTaskIds, strconv.Itoa(taskId)) {
+				ctx.JSON(http.StatusOK, gin.H{
+					"code": http.StatusBadRequest,
+					"data": nil,
+					"msg":  "不允许设置当前任务为子任务！",
+				})
+			}
+		}
+
+		updateStatus := task.Update(taskId, taskMap)
+
+		if updateStatus < 0 {
+			ctx.JSON(http.StatusOK, gin.H{
+				"code": http.StatusOK,
+				"data": nil,
+				"msg":  "操作失败！",
+			})
+		}
 
 		taskHost := new(taskHostModel.TaskHost)
 		if form.Protocol == taskModel.TaskRPC {
@@ -257,7 +418,7 @@ func Save(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, gin.H{
 			"code": http.StatusOK,
 			"data": nil,
-			"msg":  "保存成功！",
+			"msg":  "修改成功！",
 		})
 	}
 }
@@ -336,8 +497,12 @@ func Stop(ctx *gin.Context) {
 // 激活任务
 func Enable(ctx *gin.Context) {
 	taskId, _ := strconv.Atoi(ctx.Param("taskId"))
+	taskMap := make(map[string]interface{})
+	taskMap["task_status"] = common.Enabled
+	taskMap["update_time"] = datetimeUtils.FormatDateTime()
+
 	task := new(taskModel.Task)
-	enable := task.Enable(taskId)
+	enable := task.Update(taskId, taskMap)
 
 	if enable < 0 {
 		ctx.JSON(http.StatusOK, gin.H{
@@ -347,7 +512,7 @@ func Enable(ctx *gin.Context) {
 		})
 	}
 
-	addTaskToTimer(taskId)
+	taskService.ServiceTask.Initialize()
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"code": http.StatusOK,
@@ -359,8 +524,12 @@ func Enable(ctx *gin.Context) {
 // 暂停任务
 func Disable(ctx *gin.Context) {
 	taskId, _ := strconv.Atoi(ctx.Param("taskId"))
+	taskMap := make(map[string]interface{})
+	taskMap["task_status"] = common.Disabled
+	taskMap["update_time"] = datetimeUtils.FormatDateTime()
+
 	task := new(taskModel.Task)
-	disable := task.Disable(taskId)
+	disable := task.Update(taskId, taskMap)
 
 	if disable < 0 {
 		ctx.JSON(http.StatusOK, gin.H{

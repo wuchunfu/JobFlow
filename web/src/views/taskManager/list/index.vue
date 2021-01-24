@@ -274,7 +274,7 @@
           this.$refs.addOrUpdate.init(row)
         })
       },
-      //  删除
+      // 删除
       deleteHandle(id) {
         const rowIds = id ? [id] : this.dataListSelections.map(item => {
           return item.taskId
@@ -380,7 +380,9 @@
         } else {
           this.getDisable({taskId: item.taskId})
         }
-        this.getDataList()
+        setTimeout(() => {
+          this.getDataList()
+        }, 1000)
       },
       viewLogHandle(id) {
         const taskId = id !== undefined ? id || 0 : undefined

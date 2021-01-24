@@ -110,6 +110,17 @@ func (task *Task) Save() int {
 	return task.TaskId
 }
 
+func (task *Task) Update(taskId int, fieldMap map[string]interface{}) int {
+	db := database.GetDB().Begin()
+	err := db.Model(&task).Where("task_id = ?", taskId).Update(fieldMap)
+	if err.Error != nil {
+		db.Rollback()
+		logger.Error(err.Error)
+	}
+	db.Commit()
+	return task.TaskId
+}
+
 // 删除
 func (task *Task) Delete(taskId int) {
 	db := database.GetDB().Begin()
@@ -174,34 +185,6 @@ func (task *Task) setHostsForTasks(tasks []Task) ([]Task, error) {
 		tasks[i].Hosts = taskHostDetails
 	}
 	return tasks, err
-}
-
-// 激活
-func (task *Task) Enable(taskId int) int {
-	db := database.GetDB().Begin()
-	fieldMap := make(map[string]interface{})
-	fieldMap["task_status"] = common.Enabled
-	err := db.Model(&task).Where("task_id = ?", taskId).Update(fieldMap)
-	if err.Error != nil {
-		db.Rollback()
-		logger.Error(err.Error)
-	}
-	db.Commit()
-	return task.TaskId
-}
-
-// 停止
-func (task *Task) Disable(taskId int) int {
-	db := database.GetDB().Begin()
-	fieldMap := make(map[string]interface{})
-	fieldMap["task_status"] = common.Disabled
-	err := db.Model(&task).Where("task_id = ?", taskId).Update(fieldMap)
-	if err.Error != nil {
-		db.Rollback()
-		logger.Error(err.Error)
-	}
-	db.Commit()
-	return task.TaskId
 }
 
 // 获取所有激活任务

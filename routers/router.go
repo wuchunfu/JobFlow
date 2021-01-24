@@ -47,7 +47,7 @@ func InitRouter() *gin.Engine {
 		taskGroup.GET("/info/:taskId", taskController.Detail)
 		taskGroup.GET("/hostAllList", taskController.HostAllList)
 		taskGroup.POST("/save", taskController.Save)
-		taskGroup.POST("/update", hostController.Update)
+		taskGroup.POST("/update", taskController.Update)
 		taskGroup.POST("/delete", taskController.Delete)
 		taskGroup.GET("/run/:taskId", taskController.Run)
 		taskGroup.GET("/stop/:taskId", taskController.Stop)

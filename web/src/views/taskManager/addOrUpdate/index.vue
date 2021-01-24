@@ -50,8 +50,8 @@
         <el-form-item v-if="dataForm.protocol !== 1" label="任务节点" prop="selectedHostByHostIds">
           <el-select v-model="selectedHostByHostIds" filterable multiple class="filter-item" style="width: 90%;"
                      placeholder="任务节点">
-            <el-option v-for="item in hostsOptions" :key="item.hostId" :label="item.hostAlias + ' - ' + item.hostName"
-                       :value="item.hostId"/>
+            <el-option v-for="(item, index) in hostsOptions" :key="index"
+                       :label="item.hostAlias + ' - ' + item.hostName" :value="item.hostId"/>
           </el-select>
         </el-form-item>
         <el-form-item v-if="dataForm.protocol === 1" label="请求方法" prop="httpMethod">
@@ -62,6 +62,15 @@
         <el-form-item label="命令" prop="command">
           <el-input v-model="dataForm.command" type="textarea" style="width: 90%;"
                     :placeholder="commandPlaceholder"/>
+        </el-form-item>
+        <el-form-item label="是否激活" prop="taskStatus">
+          <el-switch
+            v-model="dataForm.taskStatus"
+            :active-value="1"
+            :inactive-vlaue="0"
+            active-color="#13ce66"
+            inactive-color="#ff4949"
+          />
         </el-form-item>
         <el-form-item label="任务超时时间" prop="timeout">
           <el-input v-model.number.trim="dataForm.timeout" type="text" style="width: 90%;" placeholder="任务超时时间"/>
@@ -167,7 +176,8 @@
           notifyType: 2,
           notifyReceiverId: '',
           notifyKeyword: '',
-          taskRemark: ''
+          taskRemark: '',
+          taskStatus: 1
         },
         typeOptions: [
           {
@@ -251,16 +261,6 @@
             value: 4
           }
         ],
-        taskStatusOptions: [
-          {
-            label: '停止',
-            value: 1
-          },
-          {
-            label: '正常',
-            value: 2
-          }
-        ],
         mailUsers: [],
         selectedMailNotifyIds: [],
         selectedHostByHostIds: [],
@@ -320,12 +320,14 @@
               this.dataForm.timeout = result.data.timeout
               this.dataForm.isMultiInstance = result.data.isMultiInstance
               this.dataForm.retryTimes = result.data.retryTimes
-              this.dataForm.notifyStatus = result.data.notifyStatus + 1
-              this.dataForm.notifyType = result.data.notifyType + 1
+              this.dataForm.retryInterval = result.data.retryInterval
+              this.dataForm.notifyStatus = result.data.notifyStatus
+              this.dataForm.notifyType = result.data.notifyType
               this.dataForm.notifyReceiverId = result.data.notifyReceiverId
               this.dataForm.notifyKeyword = result.data.notifyKeyword
               this.dataForm.taskTag = result.data.taskTag
               this.dataForm.taskRemark = result.data.taskRemark
+              this.dataForm.taskStatus = result.data.taskStatus
 
               if (result.data.dependencyStatus) {
                 this.dataForm.dependencyStatus = result.data.dependencyStatus
@@ -333,9 +335,10 @@
               if (result.data.httpMethod) {
                 this.dataForm.httpMethod = result.data.httpMethod
               }
-              this.hostsOptions = result.data.hosts || []
+              this.selectedHostByHostIds = []
+              const hostList = result.data.hosts || []
               if (this.dataForm.protocol === 2) {
-                this.hostsOptions.forEach((v) => {
+                hostList.forEach((v) => {
                   this.selectedHostByHostIds.push(v.hostId)
                 })
               }
@@ -381,23 +384,17 @@
             notifyType: 2,
             notifyReceiverId: '',
             notifyKeyword: '',
-            taskRemark: ''
+            taskRemark: '',
+            taskStatus: 1
           }
         }
       },
       getAllHostDataList() {
         this.getHostAllList().then((res) => {
           const result = res.data
-          // console.log(111111)
           // console.log(result)
           if (result !== undefined && result.code === 200) {
             this.hostsOptions = result.data || []
-            console.log(this.dataForm.protocol)
-            // if (this.dataForm.protocol === 2) {
-            //   this.hostsOptions.forEach((v) => {
-            //     this.selectedHostByHostIds.push(v.hostId)
-            //   })
-            // }
           } else {
             this.hostsOptions = []
             this.$notify({
@@ -463,12 +460,14 @@
               'timeout': this.dataForm.timeout,
               'isMultiInstance': this.dataForm.isMultiInstance,
               'retryTimes': this.dataForm.retryTimes,
+              'retryInterval': this.dataForm.retryInterval,
               'notifyStatus': this.dataForm.notifyStatus,
               'notifyType': this.dataForm.notifyType,
               'notifyReceiverId': this.dataForm.notifyReceiverId,
               'notifyKeyword': this.dataForm.notifyKeyword,
               'taskTag': this.dataForm.taskTag,
-              'taskRemark': this.dataForm.taskRemark
+              'taskRemark': this.dataForm.taskRemark,
+              'taskStatus': this.dataForm.taskStatus
             }
             console.log(params)
             this.getTableSaveOrUpdate(params).then((res) => {
@@ -502,7 +501,8 @@
                   notifyReceiverId: '',
                   notifyKeyword: '',
                   taskTag: '',
-                  taskRemark: ''
+                  taskRemark: '',
+                  taskStatus: 1
                 }
                 this.visible = false
                 this.$emit('refreshDataList')
@@ -534,7 +534,8 @@
                   notifyReceiverId: '',
                   notifyKeyword: '',
                   taskTag: '',
-                  taskRemark: ''
+                  taskRemark: '',
+                  taskStatus: 1
                 }
                 this.visible = false
                 this.$emit('refreshDataList')

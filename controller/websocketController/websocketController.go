@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-var LogFilepath = "/Users/wuchunfu/workspaces/learning/CodeSpaces/gin-vue/logs/access.log"
+var LogFilepath = "./logs/access.log"
 
 var upGrader = websocket.Upgrader{
 	CheckOrigin: func(r *http.Request) bool {

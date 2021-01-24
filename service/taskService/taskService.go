@@ -116,7 +116,9 @@ func (task Task) Initialize() {
 	nyc, _ := time.LoadLocation("Asia/Shanghai")
 	serviceCron = cron.New(cron.WithSeconds(), cron.WithLocation(nyc))
 	serviceCron.Start()
-	concurrencyQueue = ConcurrencyQueue{queue: make(chan struct{}, setting.System.ConcurrencyQueue)}
+	concurrencyQueue = ConcurrencyQueue{
+		queue: make(chan struct{}, setting.System.ConcurrencyQueue),
+	}
 	taskCount = TaskCount{sync.WaitGroup{}, make(chan struct{})}
 	go taskCount.Wait()
 
