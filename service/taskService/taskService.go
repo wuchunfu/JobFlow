@@ -364,7 +364,7 @@ func createJob(task taskModel.Task) cron.FuncJob {
 			return
 		}
 
-		if task.IsMultiInstance == 0 {
+		if task.IsMultiInstance == 1 {
 			runInstance.add(task.TaskId)
 			defer runInstance.done(task.TaskId)
 		}
@@ -393,7 +393,7 @@ func createHandler(task taskModel.Task) Handler {
 
 // 任务前置操作
 func beforeExecJob(task taskModel.Task) int64 {
-	if task.IsMultiInstance == 0 && runInstance.has(task.TaskId) {
+	if task.IsMultiInstance == 1 && runInstance.has(task.TaskId) {
 		return createTaskLog(task, common.Cancel)
 	}
 	taskLogId := createTaskLog(task, common.Running)
