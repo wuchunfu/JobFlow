@@ -2,7 +2,7 @@ package settingModel
 
 import (
 	"encoding/json"
-	"github.com/sirupsen/logrus"
+	logger "github.com/sirupsen/logrus"
 	"github.com/wuchunfu/JobFlow/middleware/database"
 )
 
@@ -56,37 +56,38 @@ const (
 
 // 初始化基本字段 邮件、slack等
 func (setting *Setting) InitBasicField() {
+	db := database.GetDB()
+
 	setting.Code = SlackCode
 	setting.Key = SlackUrlKey
 	setting.Value = ""
-	db := database.GetDB()
 	db.Model(&setting).Create(&setting)
-	setting.Id = 0
 
+	setting.Id = 0
 	setting.Code = SlackCode
 	setting.Key = SlackTemplateKey
 	setting.Value = slackTemplate
 	db.Model(&setting).Create(&setting)
-	setting.Id = 0
 
+	setting.Id = 0
 	setting.Code = MailCode
 	setting.Key = MailServerKey
 	setting.Value = ""
 	db.Model(&setting).Create(&setting)
-	setting.Id = 0
 
+	setting.Id = 0
 	setting.Code = MailCode
 	setting.Key = MailTemplateKey
 	setting.Value = emailTemplate
 	db.Model(&setting).Create(&setting)
-	setting.Id = 0
 
+	setting.Id = 0
 	setting.Code = WebhookCode
 	setting.Key = WebhookTemplateKey
 	setting.Value = webhookTemplate
 	db.Model(&setting).Create(&setting)
-	setting.Id = 0
 
+	setting.Id = 0
 	setting.Code = WebhookCode
 	setting.Key = WebhookUrlKey
 	setting.Value = ""
@@ -94,7 +95,6 @@ func (setting *Setting) InitBasicField() {
 }
 
 // region slack配置
-
 type Slack struct {
 	Url      string    `json:"url"`
 	Channels []Channel `json:"channels"`
@@ -106,18 +106,19 @@ type Channel struct {
 	Name string `json:"name"`
 }
 
-func (setting *Setting) Slack() (Slack, error) {
+func (setting *Setting) Slack() Slack {
 	db := database.GetDB()
 	list := make([]Setting, 0)
-	err := db.Model(&setting).Where("code = ?", SlackCode).Find(&list)
+	err := db.Model(&setting).Where(&Setting{Code: SlackCode}).Find(&list)
 	slack := Slack{}
 	if err.Error != nil {
-		return slack, err.Error
+		logger.Error("<<<slack>>> failed to get slack configuration from database, error msg: %v", err.Error)
+		return slack
 	}
 
 	setting.formatSlack(list, &slack)
 
-	return slack, err.Error
+	return slack
 }
 
 func (setting *Setting) formatSlack(list []Setting, slack *Slack) {
@@ -135,29 +136,43 @@ func (setting *Setting) formatSlack(list []Setting, slack *Slack) {
 	}
 }
 
-func (setting *Setting) UpdateSlack(url, template string) error {
-	db := database.GetDB()
-	setting.Value = url
+func (setting *Setting) UpdateSlack(url, template string) {
+	db := database.GetDB().Begin()
 
-	db.Model(&setting).Select("value").Update(setting, Setting{Code: SlackCode, Key: SlackUrlKey})
+	urlMap := make(map[string]interface{})
+	urlMap["code"] = SlackCode
+	urlMap["key"] = SlackUrlKey
+	urlErr := db.Model(&setting).Where(&Setting{Value: url}).Updates(urlMap)
+	if urlErr.Error != nil {
+		logger.Errorf("update slack fail, error msg: %v", urlErr.Error)
+		db.Rollback()
+	}
+	db.Commit()
 
-	setting.Value = template
-	db.Model(&setting).Select("value").Update(setting, Setting{Code: SlackCode, Key: SlackTemplateKey})
-
-	return nil
+	templateMap := make(map[string]interface{})
+	templateMap["code"] = SlackCode
+	templateMap["key"] = SlackTemplateKey
+	templateErr := db.Model(&setting).Where(&Setting{Value: template}).Updates(templateMap)
+	if templateErr.Error != nil {
+		logger.Errorf("update slack fail, error msg: %v", templateErr.Error)
+		db.Rollback()
+	}
+	db.Commit()
 }
 
 // 创建slack渠道
-func (setting *Setting) CreateChannel(channel string) (*Setting, error) {
+func (setting *Setting) CreateChannel(channel string) *Setting {
 	setting.Code = SlackCode
 	setting.Key = SlackChannelKey
 	setting.Value = channel
+
 	db := database.GetDB()
 	err := db.Model(&setting).Create(&setting)
 	if err.Error != nil {
-		return nil, err.Error
+		logger.Errorf("create channel fail, error msg: %v", err.Error)
+		return nil
 	}
-	return setting, err.Error
+	return setting
 }
 
 func (setting *Setting) IsChannelExist(channel string) bool {
@@ -166,7 +181,7 @@ func (setting *Setting) IsChannelExist(channel string) bool {
 	setting.Value = channel
 
 	db := database.GetDB()
-	var count int
+	var count int64
 	err := db.Model(&setting).Find(&setting).Count(&count)
 	if err.Error != nil && count <= 0 {
 		return false
@@ -180,14 +195,15 @@ func (setting *Setting) RemoveChannel(id int) {
 	setting.Code = SlackCode
 	setting.Key = SlackChannelKey
 	setting.Id = id
-	db := database.GetDB()
+
+	db := database.GetDB().Begin()
 	err := db.Model(&setting).Delete(&setting)
 	if err.Error != nil {
-		logrus.Error(err.Error)
+		logger.Errorf("delete channel fail, error msg: %v", err.Error)
+		db.Rollback()
 	}
+	db.Commit()
 }
-
-// endregion
 
 type Mail struct {
 	Host      string     `json:"host"`
@@ -205,17 +221,19 @@ type MailUser struct {
 }
 
 // region 邮件配置
-func (setting *Setting) Mail() (Mail, error) {
+func (setting *Setting) Mail() Mail {
 	db := database.GetDB()
 	list := make([]Setting, 0)
-	err := db.Model(&setting).Where("code = ?", MailCode).Find(&list)
+	err := db.Model(&setting).Where(&Setting{Code: MailCode}).Find(&list)
 	mail := Mail{MailUsers: make([]MailUser, 0)}
 	if err.Error != nil {
-		return mail, err.Error
+		logger.Errorf("<<<mail>>> failed to get mail configuration from database, error msg: %v", err.Error)
+		return mail
 	}
 
 	setting.formatMail(list, &mail)
-	return mail, err.Error
+
+	return mail
 }
 
 func (setting *Setting) formatMail(list []Setting, mail *Mail) {
@@ -234,14 +252,28 @@ func (setting *Setting) formatMail(list []Setting, mail *Mail) {
 	}
 }
 
-func (setting *Setting) UpdateMail(config, template string) error {
-	setting.Value = config
-	db := database.GetDB()
-	db.Select("value").Update(&setting, Setting{Code: MailCode, Key: MailServerKey})
+func (setting *Setting) UpdateMail(config, template string) {
+	db := database.GetDB().Begin()
 
-	setting.Value = template
-	db.Select("value").Update(&setting, Setting{Code: MailCode, Key: MailTemplateKey})
-	return nil
+	configMap := make(map[string]interface{})
+	configMap["code"] = MailCode
+	configMap["key"] = MailServerKey
+	configErr := db.Model(&setting).Where(&Setting{Value: config}).Updates(configMap)
+	if configErr.Error != nil {
+		logger.Errorf("update mail fail, error msg: %v", configErr.Error)
+		db.Rollback()
+	}
+	db.Commit()
+
+	templateMap := make(map[string]interface{})
+	templateMap["code"] = MailCode
+	templateMap["key"] = MailTemplateKey
+	templateErr := db.Model(&setting).Where(&Setting{Value: template}).Updates(templateMap)
+	if templateErr.Error != nil {
+		logger.Errorf("update mail fail, error msg: %v", templateErr.Error)
+		db.Rollback()
+	}
+	db.Commit()
 }
 
 func (setting *Setting) CreateMailUser(username, email string) {
@@ -250,14 +282,14 @@ func (setting *Setting) CreateMailUser(username, email string) {
 	mailUser := MailUser{0, username, email}
 	jsonByte, err := json.Marshal(mailUser)
 	if err != nil {
-		logrus.Error(err.Error())
+		logger.Errorf("create mail user marshal fail, error msg: %v", err.Error())
 	}
 	setting.Value = string(jsonByte)
 
 	db := database.GetDB()
 	createErr := db.Model(&setting).Create(&setting)
 	if createErr.Error != nil {
-		logrus.Error(createErr.Error)
+		logger.Errorf("create mail user fail, error msg: %v", createErr.Error)
 	}
 }
 
@@ -265,11 +297,14 @@ func (setting *Setting) RemoveMailUser(id int) {
 	setting.Code = MailCode
 	setting.Key = MailUserKey
 	setting.Id = id
-	db := database.GetDB()
+
+	db := database.GetDB().Begin()
 	err := db.Model(&setting).Delete(&setting)
 	if err.Error != nil {
-		logrus.Error(err.Error)
+		logger.Errorf("delete mail user fail, error msg: %v", err.Error)
+		db.Rollback()
 	}
+	db.Commit()
 }
 
 type WebHook struct {
@@ -277,18 +312,20 @@ type WebHook struct {
 	Template string `json:"template"`
 }
 
-func (setting *Setting) Webhook() (WebHook, error) {
+func (setting *Setting) Webhook() WebHook {
 	list := make([]Setting, 0)
-	db := database.GetDB()
-	err := db.Model(&setting).Where("code = ?", WebhookCode).Find(&list)
 	webHook := WebHook{}
+
+	db := database.GetDB()
+	err := db.Model(&setting).Where(&Setting{Code: WebhookCode}).Find(&list)
 	if err.Error != nil {
-		return webHook, err.Error
+		logger.Errorf("<<<webhook>>> failed to get webhook configuration from database, error msg: %v", err.Error)
+		return webHook
 	}
 
 	setting.formatWebhook(list, &webHook)
 
-	return webHook, err.Error
+	return webHook
 }
 
 func (setting *Setting) formatWebhook(list []Setting, webHook *WebHook) {
@@ -302,15 +339,25 @@ func (setting *Setting) formatWebhook(list []Setting, webHook *WebHook) {
 	}
 }
 
-func (setting *Setting) UpdateWebHook(url, template string) error {
-	setting.Value = url
+func (setting *Setting) UpdateWebHook(url, template string) {
+	db := database.GetDB().Begin()
+	urlMap := make(map[string]interface{})
+	urlMap["code"] = WebhookCode
+	urlMap["key"] = WebhookUrlKey
+	urlErr := db.Model(&setting).Where(&Setting{Value: url}).Updates(urlMap)
+	if urlErr.Error != nil {
+		logger.Errorf("update webhook fail, error msg: %v", urlErr.Error)
+		db.Rollback()
+	}
+	db.Commit()
 
-	db := database.GetDB()
-	db.Model(&setting).Select("value").Update(setting, Setting{Code: WebhookCode, Key: WebhookUrlKey})
-
-	setting.Value = template
-	db.Model(&setting).Select("value").Update(setting, Setting{Code: WebhookCode, Key: WebhookTemplateKey})
-	return nil
+	templateMap := make(map[string]interface{})
+	templateMap["code"] = WebhookCode
+	templateMap["key"] = WebhookTemplateKey
+	templateErr := db.Model(&setting).Where(&Setting{Value: template}).Updates(templateMap)
+	if templateErr.Error != nil {
+		logger.Errorf("update webhook fail, error msg: %v", templateErr.Error)
+		db.Rollback()
+	}
+	db.Commit()
 }
-
-// endregion

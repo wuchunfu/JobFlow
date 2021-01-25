@@ -2,7 +2,7 @@ package grpcpool
 
 import (
 	"context"
-	"github.com/wuchunfu/JobFlow/config"
+	"github.com/wuchunfu/JobFlow/middleware/config"
 	"github.com/wuchunfu/JobFlow/middleware/rpc/auth"
 	pb "github.com/wuchunfu/JobFlow/middleware/rpc/proto"
 	"google.golang.org/grpc"
@@ -96,7 +96,7 @@ func (pool *GRPCPool) factory(addr string) (*Client, error) {
 		grpc.WithDisableRetry(),
 	}
 
-	setting := config.InitConfig
+	setting := config.ServerSetting
 	if !setting.System.EnableTls {
 		opts = append(opts, grpc.WithInsecure(), grpc.WithBlock())
 	} else {

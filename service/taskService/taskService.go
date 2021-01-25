@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/robfig/cron/v3"
 	"github.com/wuchunfu/JobFlow/common"
-	"github.com/wuchunfu/JobFlow/config"
+	"github.com/wuchunfu/JobFlow/middleware/config"
 	"github.com/wuchunfu/JobFlow/middleware/httpclient"
 	rpcClient "github.com/wuchunfu/JobFlow/middleware/rpc/client"
 	rpc "github.com/wuchunfu/JobFlow/middleware/rpc/proto"
@@ -111,7 +111,7 @@ type TaskResult struct {
 
 // 初始化任务, 从数据库取出所有任务, 添加到定时任务并运行
 func (task Task) Initialize() {
-	setting := config.InitConfig
+	setting := config.ServerSetting
 	//serviceCron = cron.New()
 	nyc, _ := time.LoadLocation("Asia/Shanghai")
 	serviceCron = cron.New(cron.WithSeconds(), cron.WithLocation(nyc))

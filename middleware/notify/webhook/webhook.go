@@ -14,11 +14,7 @@ type WebHook struct{}
 
 func (webHook *WebHook) Send(msg notify.Message) {
 	model := new(settingModel.Setting)
-	webHookSetting, err := model.Webhook()
-	if err != nil {
-		logrus.Error("#webHook#从数据库获取webHook配置失败", err)
-		return
-	}
+	webHookSetting := model.Webhook()
 	if webHookSetting.Url == "" {
 		logrus.Error("#webHook#webhook-url为空")
 		return

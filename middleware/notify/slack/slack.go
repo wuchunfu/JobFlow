@@ -18,11 +18,7 @@ type Slack struct{}
 
 func (slack *Slack) Send(msg notify.Message) {
 	model := new(settingModel.Setting)
-	slackSetting, err := model.Slack()
-	if err != nil {
-		logrus.Error("#slack#从数据库获取slack配置失败", err)
-		return
-	}
+	slackSetting := model.Slack()
 	if slackSetting.Url == "" {
 		logrus.Error("#slack#webhook-url为空")
 		return

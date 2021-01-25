@@ -4,12 +4,13 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/sirupsen/logrus"
-	"github.com/wuchunfu/JobFlow/config"
+	"github.com/wuchunfu/JobFlow/middleware/config"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
 	"log"
+	"net/url"
 	"os"
 	"strings"
 	"time"
@@ -18,23 +19,26 @@ import (
 var dbPingInterval = 90 * time.Second
 var DB *gorm.DB
 
-func InitDB() *gorm.DB {
-	setting := config.InitConfig
-	dsn := getDbEngineDSN(&setting)
+func GetDB() *gorm.DB {
+	return DB
+}
+
+func InitDB(setting *config.Database) *gorm.DB {
+	dsn := getDbEngineDSN(setting)
 
 	newLogger := logger.New(
 		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
 		logger.Config{
-			SlowThreshold: time.Second,                    // 慢 SQL 阈值
-			LogLevel:      setLogLevel(setting.Log.Level), // Log level
-			Colorful:      false,                          // 禁用彩色打印
+			SlowThreshold: time.Second,                // 慢 SQL 阈值
+			LogLevel:      setLogLevel(setting.Level), // Log level
+			Colorful:      false,                      // 禁用彩色打印
 		},
 	)
 
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
 		NamingStrategy: schema.NamingStrategy{
-			TablePrefix:   setting.Db.Prefix, // 表名前缀，`User` 的表名应该是 `t_users`
-			SingularTable: true,              // 使用单数表名，启用该选项，此时，`User` 的表名应该是 `t_user`
+			TablePrefix:   setting.Prefix, // 表名前缀，`User` 的表名应该是 `t_users`
+			SingularTable: true,           // 使用单数表名，启用该选项，此时，`User` 的表名应该是 `t_user`
 		},
 		PrepareStmt:            true, // 执行任何 SQL 时都创建并缓存预编译语句，可以提高后续的调用速度
 		DisableAutomaticPing:   false,
@@ -64,10 +68,6 @@ func InitDB() *gorm.DB {
 	return db
 }
 
-func GetDB() *gorm.DB {
-	return DB
-}
-
 func setLogLevel(logLevel string) logger.LogLevel {
 	// 设置日志级别
 	level := strings.Replace(strings.ToLower(logLevel), " ", "", -1)
@@ -86,28 +86,72 @@ func setLogLevel(logLevel string) logger.LogLevel {
 }
 
 // 获取数据库引擎DSN  mysql,postgres
-func getDbEngineDSN(setting *config.Server) string {
-	engine := strings.ToLower(setting.Db.Engine)
+func getDbEngineDSN(setting *config.Database) string {
+	engine := strings.ToLower(setting.DbType)
 	dsn := ""
 	switch engine {
 	case "mysql":
+		// parseTime: 想要能正确的处理 time.Time，你需要添加 parseTime 参数。
+		// loc: 设置时间的位置
 		dsn = fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=%s&allowNativePasswords=true&parseTime=True&loc=Local",
-			setting.Db.Username,
-			setting.Db.Password,
-			setting.Db.Host,
-			setting.Db.Port,
-			setting.Db.Database,
-			setting.Db.Charset)
+			// 连接数据库的用户名
+			url.QueryEscape(setting.Username),
+			// 连接数据库的密码
+			url.QueryEscape(setting.Password),
+			// 连接数据库的地址
+			setting.Host,
+			// 连接数据库的端口号
+			setting.Port,
+			// 连接数据库的具体数据库名称
+			setting.DbName,
+			// 连接数据库的编码格式
+			setting.Charset)
 	case "postgres":
-		dsn = fmt.Sprintf("host=%s port=%d dbname=%s user=%s password=%s sslmode=disable",
-			setting.Db.Host,
-			setting.Db.Port,
-			setting.Db.Database,
-			setting.Db.Username,
-			setting.Db.Password)
+		dsn = fmt.Sprintf("host=%s port=%d dbname=%s user=%s password=%s sslmode=%s TimeZone=%s",
+			// 连接数据库的地址
+			setting.Host,
+			// 连接数据库的端口号
+			setting.Port,
+			// 连接数据库的具体数据库名称
+			setting.DbName,
+			// 连接数据库的用户名
+			url.QueryEscape(setting.Username),
+			// 连接数据库的密码
+			url.QueryEscape(setting.Password),
+			// SSL mode
+			setting.SslMode,
+			// 时区
+			setting.TimeZone)
+	default:
+		return fmt.Sprintf("Unknown database type: %s", setting.DbType)
 	}
 	return dsn
 }
+
+//
+//// 获取数据库引擎DSN  mysql,postgres
+//func getDbEngineDSN(setting *config.Server) string {
+//	engine := strings.ToLower(setting.Db.Engine)
+//	dsn := ""
+//	switch engine {
+//	case "mysql":
+//		dsn = fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=%s&allowNativePasswords=true&parseTime=True&loc=Local",
+//			setting.Db.Username,
+//			setting.Db.Password,
+//			setting.Db.Host,
+//			setting.Db.Port,
+//			setting.Db.Database,
+//			setting.Db.Charset)
+//	case "postgres":
+//		dsn = fmt.Sprintf("host=%s port=%d dbname=%s user=%s password=%s sslmode=disable",
+//			setting.Db.Host,
+//			setting.Db.Port,
+//			setting.Db.Database,
+//			setting.Db.Username,
+//			setting.Db.Password)
+//	}
+//	return dsn
+//}
 
 func KeepAlivedDb(engine *sql.DB) {
 	t := time.Tick(dbPingInterval)

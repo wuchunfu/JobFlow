@@ -1,0 +1,66 @@
+# system configuration
+system:
+  # application name
+  appName: 定时任务管理系统
+  # service listening address
+  httpAddr: 0.0.0.0
+  # service listening port
+  httpPort: 1060
+  # 允许访问的客户端IP, 多个IP逗号分隔, 默认为空, 不限制
+  allowIps:
+  # 并发队列数
+  concurrencyQueue: 500
+  # 是否启用签名验证
+  apiSignEnable: false
+  # API接口key, 未配置不能使用接口
+  apiKey:
+  # API接口秘钥, 未配置不能使用接口
+  apiSecret:
+  authSecret: bf63c8c79159f7729b44d6e82d0d705543ad69de4aa282ad2c0c755379141c09
+  # 开启TLS
+  enableTls: false
+  # CA证书文件
+  caFile:
+  # 客户端证书
+  certFile:
+  # 客户端私钥
+  keyFile:
+
+# mysql
+database:
+  # 数据库引擎, 目前只支持mysql
+  dbType: mysql
+  # 数据库主机名
+  host: 127.0.0.1
+  # 数据库端口
+  port: 3306
+  # 数据库名
+  dbName: test
+  # 数据库用户名
+  username: root
+  # 数据库密码
+  password: root
+  # 表前缀
+  prefix: gin_
+  # 数据库字符集
+  charset: utf8mb4
+  maxIdleConns: 5
+  maxOpenConns: 100
+  # Either "silent", "info", "warn", "error", default is "silent"
+  level: silent
+  # For "postgres" only, either "disable", "require" or "verify-full", default is "disable"
+  sslMode: disable
+  # For "postgres" only, either "Asia/Shanghai", default is "Asia/Shanghai"
+  timeZone: Asia/Shanghai
+
+# logger configuration
+log:
+  # log file path
+  filePath: ./logs
+  # log file name
+  fileName: run.log
+  # Either "info", "warn", "error", "debug", default is "info"
+  level: debug
+  # Can be "console" and "file", default is "console"
+  # Use comma to separate multiple modes, e.g. "console, file"
+  mode: file

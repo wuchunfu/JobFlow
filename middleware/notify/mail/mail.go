@@ -16,12 +16,7 @@ type Mail struct {
 
 func (mail *Mail) Send(msg notify.Message) {
 	model := new(settingModel.Setting)
-	mailSetting, err := model.Mail()
-	logrus.Debugf("%+v", mailSetting)
-	if err != nil {
-		logrus.Error("#mail#从数据库获取mail配置失败", err)
-		return
-	}
+	mailSetting := model.Mail()
 	if mailSetting.Host == "" {
 		logrus.Error("#mail#Host为空")
 		return
