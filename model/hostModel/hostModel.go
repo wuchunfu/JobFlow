@@ -16,7 +16,7 @@ type Host struct {
 	UpdateTime string `json:"updateTime" gorm:"type:varchar(50); DEFAULT ''"`
 }
 
-func (host *Host) List(page int, pageSize int, hostName string) ([]Host, int) {
+func (host *Host) List(page int, pageSize int, hostName string) ([]Host, int64) {
 	db := database.GetDB()
 	if hostName != "" {
 		db = db.Where("host_name = ?", hostName)
@@ -27,7 +27,7 @@ func (host *Host) List(page int, pageSize int, hostName string) ([]Host, int) {
 		logger.Error(findErr.Error)
 		return nil, -1
 	}
-	var count int
+	var count int64
 	countErr := db.Model(&host).Count(&count)
 	if countErr.Error != nil {
 		logger.Error(countErr.Error)
@@ -91,9 +91,9 @@ func (host *Host) Delete(hostId int) {
 }
 
 // 主机别名是否存在
-func (host *Host) IsExistsHostAlias(hostAlias string) int {
+func (host *Host) IsExistsHostAlias(hostAlias string) int64 {
 	db := database.GetDB()
-	var count int
+	var count int64
 	err := db.Model(&host).Where("host_alias = ?", hostAlias).Count(&count)
 	if err.Error != nil {
 		logger.Error(err.Error)
@@ -103,9 +103,9 @@ func (host *Host) IsExistsHostAlias(hostAlias string) int {
 }
 
 // 主机名是否存在
-func (host *Host) IsExistsHostName(hostName string) int {
+func (host *Host) IsExistsHostName(hostName string) int64 {
 	db := database.GetDB()
-	var count int
+	var count int64
 	err := db.Model(&host).Where("host_name = ?", hostName).Count(&count)
 	if err.Error != nil {
 		logger.Error(err.Error)
@@ -115,9 +115,9 @@ func (host *Host) IsExistsHostName(hostName string) int {
 }
 
 // 主机是否存在
-func (host *Host) IsExistsHost(hostId int) int {
+func (host *Host) IsExistsHost(hostId int) int64 {
 	db := database.GetDB()
-	var count int
+	var count int64
 	err := db.Model(&host).Where("host_id = ?", hostId).Count(&count)
 	if err.Error != nil {
 		logger.Error(err.Error)

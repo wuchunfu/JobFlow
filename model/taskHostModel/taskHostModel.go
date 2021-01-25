@@ -3,6 +3,8 @@ package taskHostModel
 import (
 	logger "github.com/sirupsen/logrus"
 	"github.com/wuchunfu/JobFlow/middleware/database"
+	"strconv"
+	"strings"
 )
 
 type TaskHost struct {
@@ -15,22 +17,20 @@ type TaskHost struct {
 }
 
 // 新增
-func (taskHost *TaskHost) Save(taskId int, hostIds []int) {
+func (taskHost *TaskHost) Save(taskId int, hostIds string) {
 	db := database.GetDB().Begin()
-	//taskHost.Delete(taskId)
+	taskHost.Delete(taskId)
 
-	//taskHosts := make([]TaskHost, len(hostIds))
-	//for i, value := range hostIds {
-	//	taskHosts[i].TaskId = taskId
-	//	taskHosts[i].HostId = value
-	//}
-	//taskHosts := make([]TaskHost, len(hostIds))
-	for _, value := range hostIds {
-		taskHost.TaskId = taskId
-		taskHost.HostId = value
+	hostIdList := strings.Split(hostIds, ",")
+	taskHostList := make([]TaskHost, 0, len(hostIdList))
+	for _, hostId := range hostIdList {
+		task := new(TaskHost)
+		task.TaskId = taskId
+		task.HostId, _ = strconv.Atoi(hostId)
+		taskHostList = append(taskHostList, *task)
 	}
 
-	err := db.Model(&taskHost).Create(&taskHost)
+	err := db.Model(&taskHost).Create(&taskHostList)
 	if err.Error != nil {
 		db.Rollback()
 		logger.Error(err.Error)
@@ -39,9 +39,9 @@ func (taskHost *TaskHost) Save(taskId int, hostIds []int) {
 }
 
 // 删除
-func (taskHost *TaskHost) Delete(id int) {
+func (taskHost *TaskHost) Delete(taskId int) {
 	db := database.GetDB().Begin()
-	err := db.Model(&taskHost).Where("id = ?", id).Delete(&taskHost)
+	err := db.Model(&taskHost).Where("task_id = ?", taskId).Delete(&taskHost)
 	if err.Error != nil {
 		db.Rollback()
 		logger.Error(err.Error)

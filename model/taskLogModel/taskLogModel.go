@@ -40,14 +40,14 @@ func (taskLog *TaskLog) Create() int64 {
 // 更新
 func (taskLog *TaskLog) Update(id int64, fieldMap map[string]interface{}) int64 {
 	db := database.GetDB()
-	err := db.Model(&taskLog).Where("id = ?", id).Update(fieldMap)
+	err := db.Model(&taskLog).Where("id = ?", id).Updates(fieldMap)
 	if err.Error != nil {
 		logrus.Error(err.Error)
 	}
 	return taskLog.Id
 }
 
-func (taskLog *TaskLog) List(page int, pageSize int, taskName string) ([]TaskLog, int) {
+func (taskLog *TaskLog) List(page int, pageSize int, taskName string) ([]TaskLog, int64) {
 	db := database.GetDB()
 	if taskName != "" {
 		db = db.Where("task_name = ?", taskName)
@@ -72,7 +72,7 @@ func (taskLog *TaskLog) List(page int, pageSize int, taskName string) ([]TaskLog
 		logrus.Error(err.Error)
 		return nil, -1
 	}
-	var count int
+	var count int64
 	countErr := db.Model(&taskLog).Count(&count)
 	if countErr.Error != nil {
 		logrus.Error(countErr.Error)
@@ -109,7 +109,7 @@ func (taskLog *TaskLog) Total(params map[string]interface{}) int64 {
 		db = db.Where("status = ?", status)
 	}
 	var count int64
-	err := db.Model(&taskLog).Count(count)
+	err := db.Model(&taskLog).Count(&count)
 	if err.Error != nil {
 		logrus.Error(err.Error)
 		return -1

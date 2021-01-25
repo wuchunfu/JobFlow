@@ -1,7 +1,6 @@
 package main
 
 import (
-	_ "github.com/go-sql-driver/mysql"
 	"github.com/wuchunfu/JobFlow/config"
 	"github.com/wuchunfu/JobFlow/middleware/database"
 	"github.com/wuchunfu/JobFlow/routers"
@@ -10,8 +9,7 @@ import (
 
 func main() {
 	initConfig := config.InitConfig
-	db := database.InitDB()
-	defer db.Close()
+	database.InitDB()
 
 	taskService.ServiceTask.Initialize()
 

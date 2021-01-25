@@ -13,7 +13,7 @@ type LoginLog struct {
 	CreateTime string `json:"createTime" gorm:"type:varchar(50); not null"`    // 创建时间
 }
 
-func (loginLog *LoginLog) List(page int, pageSize int, username string) ([]LoginLog, int) {
+func (loginLog *LoginLog) List(page int, pageSize int, username string) ([]LoginLog, int64) {
 	db := database.GetDB()
 	if username != "" {
 		db = db.Where("username = ?", username)
@@ -24,7 +24,7 @@ func (loginLog *LoginLog) List(page int, pageSize int, username string) ([]Login
 		logger.Error(findErr.Error)
 		return nil, -1
 	}
-	var count int
+	var count int64
 	countErr := db.Model(&loginLog).Count(&count)
 	if countErr.Error != nil {
 		logger.Error(countErr.Error)

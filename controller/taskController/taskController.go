@@ -245,12 +245,7 @@ func Save(ctx *gin.Context) {
 
 		taskHost := new(taskHostModel.TaskHost)
 		if form.Protocol == taskModel.TaskRPC {
-			hostIdStrList := strings.Split(form.HostId, ",")
-			hostIds := make([]int, len(hostIdStrList))
-			for i, hostIdStr := range hostIdStrList {
-				hostIds[i], _ = strconv.Atoi(hostIdStr)
-			}
-			taskHost.Save(saveId, hostIds)
+			taskHost.Save(saveId, form.HostId)
 		} else {
 			taskHost.Delete(saveId)
 		}
@@ -316,7 +311,7 @@ func Update(ctx *gin.Context) {
 		taskMap["retry_interval"] = retryInterval
 		taskMap["notify_status"] = notifyStatus
 		taskMap["notify_type"] = notifyType
-		taskMap["notify_receiverId"] = notifyReceiverId
+		taskMap["notify_receiver_id"] = notifyReceiverId
 		taskMap["notify_keyword"] = notifyKeyword
 		taskMap["task_tag"] = taskTag
 		taskMap["task_remark"] = taskRemark
@@ -400,12 +395,7 @@ func Update(ctx *gin.Context) {
 
 		taskHost := new(taskHostModel.TaskHost)
 		if form.Protocol == taskModel.TaskRPC {
-			hostIdStrList := strings.Split(form.HostId, ",")
-			hostIds := make([]int, len(hostIdStrList))
-			for i, hostIdStr := range hostIdStrList {
-				hostIds[i], _ = strconv.Atoi(hostIdStr)
-			}
-			taskHost.Save(taskId, hostIds)
+			taskHost.Save(taskId, form.HostId)
 		} else {
 			taskHost.Delete(taskId)
 		}

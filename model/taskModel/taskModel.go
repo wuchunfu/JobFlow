@@ -66,7 +66,7 @@ type Task struct {
 	NextRunTime      string                   `json:"nextRunTime" gorm:"-"`
 }
 
-func (task *Task) List(page int, pageSize int, taskName string) ([]Task, int) {
+func (task *Task) List(page int, pageSize int, taskName string) ([]Task, int64) {
 	db := database.GetDB()
 	if taskName != "" {
 		db = db.Where("task_name = ?", taskName)
@@ -77,7 +77,7 @@ func (task *Task) List(page int, pageSize int, taskName string) ([]Task, int) {
 		logger.Error(findErr.Error)
 		return nil, -1
 	}
-	var count int
+	var count int64
 	countErr := db.Model(&task).Count(&count)
 	if countErr.Error != nil {
 		logger.Error(countErr.Error)
@@ -112,7 +112,7 @@ func (task *Task) Save() int {
 
 func (task *Task) Update(taskId int, fieldMap map[string]interface{}) int {
 	db := database.GetDB().Begin()
-	err := db.Model(&task).Where("task_id = ?", taskId).Update(fieldMap)
+	err := db.Model(&task).Where("task_id = ?", taskId).Updates(fieldMap)
 	if err.Error != nil {
 		db.Rollback()
 		logger.Error(err.Error)
@@ -132,9 +132,9 @@ func (task *Task) Delete(taskId int) {
 	db.Commit()
 }
 
-func (task *Task) IsExistsTaskName(taskName string) int {
+func (task *Task) IsExistsTaskName(taskName string) int64 {
 	db := database.GetDB()
-	var count int
+	var count int64
 	err := db.Model(&task).Where("task_name = ?", taskName).Count(&count)
 	if err.Error != nil {
 		logger.Error(err.Error)

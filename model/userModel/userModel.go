@@ -63,7 +63,7 @@ func (user *User) Save() {
 // 修改
 func (user *User) Update(userId int64, fieldMap map[string]interface{}) {
 	db := database.GetDB().Begin()
-	err := db.Model(&user).Where("user_id = ?", userId).Update(fieldMap)
+	err := db.Model(&user).Where("user_id = ?", userId).Updates(fieldMap)
 	if err.Error != nil {
 		db.Rollback()
 		logger.Error(err.Error)
@@ -74,7 +74,7 @@ func (user *User) Update(userId int64, fieldMap map[string]interface{}) {
 // 修改密码
 func (user *User) ChangePassword(userId int64, fieldMap map[string]interface{}) {
 	db := database.GetDB().Begin()
-	err := db.Model(&user).Where("user_id = ?", userId).Update(fieldMap)
+	err := db.Model(&user).Where("user_id = ?", userId).Updates(fieldMap)
 	if err.Error != nil {
 		db.Rollback()
 		logger.Error(err.Error)
@@ -98,7 +98,7 @@ func (user *User) Enable(userId int) int64 {
 	db := database.GetDB().Begin()
 	fieldMap := make(map[string]interface{})
 	fieldMap["status"] = common.Enabled
-	err := db.Model(&user).Where("user_id = ?", userId).Update(fieldMap)
+	err := db.Model(&user).Where("user_id = ?", userId).Updates(fieldMap)
 	if err.Error != nil {
 		db.Rollback()
 		logger.Error(err.Error)
@@ -112,7 +112,7 @@ func (user *User) Disable(userId int) int64 {
 	db := database.GetDB().Begin()
 	fieldMap := make(map[string]interface{})
 	fieldMap["status"] = common.Disabled
-	err := db.Model(&user).Where("user_id = ?", userId).Update(fieldMap)
+	err := db.Model(&user).Where("user_id = ?", userId).Updates(fieldMap)
 	if err.Error != nil {
 		db.Rollback()
 		logger.Error(err.Error)
