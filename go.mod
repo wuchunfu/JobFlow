@@ -21,7 +21,7 @@ require (
 	github.com/sirupsen/logrus v1.7.0
 	github.com/spf13/afero v1.2.2 // indirect
 	github.com/spf13/cast v1.3.1 // indirect
-	github.com/spf13/cobra v1.1.1
+	github.com/spf13/cobra v1.1.2
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/viper v1.7.1
 	golang.org/x/net v0.0.0-20200602114024-627f9648deb9
@@ -34,7 +34,6 @@ require (
 	gopkg.in/fsnotify.v1 v1.4.7 // indirect
 	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
 	gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7 // indirect
-	gopkg.in/yaml.v2 v2.3.0 // indirect
 	gorm.io/driver/mysql v1.0.4
 	gorm.io/gorm v1.20.12
 )
