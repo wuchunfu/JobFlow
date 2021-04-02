@@ -26,7 +26,7 @@ require (
 	github.com/spf13/viper v1.7.1
 	golang.org/x/net v0.0.0-20200602114024-627f9648deb9
 	golang.org/x/sys v0.0.0-20210124154548-22da62e12c0c // indirect
-	golang.org/x/text v0.3.5
+	golang.org/x/text v0.3.6
 	google.golang.org/genproto v0.0.0-20200620020550-bd6e04640131 // indirect
 	google.golang.org/grpc v1.36.0
 	google.golang.org/protobuf v1.26.0
