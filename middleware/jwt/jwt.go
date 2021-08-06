@@ -1,7 +1,7 @@
 package jwt
 
 import (
-	"github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt"
 	logger "github.com/sirupsen/logrus"
 	"strconv"
 	"time"
@@ -33,7 +33,7 @@ func ReleaseToken(userId int64, username string) map[string]string {
 		return nil
 	}
 	tokenMap := make(map[string]string, 10)
-	tokenMap["userId"] = strconv.FormatInt(userId,10)
+	tokenMap["userId"] = strconv.FormatInt(userId, 10)
 	tokenMap["token"] = tokenString
 	tokenMap["expireTime"] = time.Unix(expireTime, 0).Format("2006-01-02 15:04:05")
 	return tokenMap
