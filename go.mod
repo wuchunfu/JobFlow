@@ -3,7 +3,7 @@ module github.com/wuchunfu/JobFlow
 go 1.16
 
 require (
-	github.com/fsnotify/fsnotify v1.5.0
+	github.com/fsnotify/fsnotify v1.5.1
 	github.com/gin-contrib/sessions v0.0.3
 	github.com/gin-gonic/gin v1.7.4
 	github.com/golang-jwt/jwt v3.2.2+incompatible
