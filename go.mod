@@ -20,8 +20,8 @@ require (
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/sirupsen/logrus v1.8.1
 	github.com/spf13/cobra v1.2.1
-	github.com/spf13/viper v1.8.1
-	golang.org/x/net v0.0.0-20210405180319-a5a99cb37ef4
+	github.com/spf13/viper v1.9.0
+	golang.org/x/net v0.0.0-20210503060351-7fd8e65b6420
 	golang.org/x/text v0.3.7
 	google.golang.org/grpc v1.40.0
 	google.golang.org/protobuf v1.27.1
