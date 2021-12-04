@@ -5,7 +5,7 @@ go 1.16
 require (
 	github.com/fsnotify/fsnotify v1.5.1
 	github.com/gin-contrib/sessions v0.0.4
-	github.com/gin-gonic/gin v1.7.4
+	github.com/gin-gonic/gin v1.7.7
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/golang/protobuf v1.5.2
 	github.com/gorilla/websocket v1.4.2
