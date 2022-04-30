@@ -3,7 +3,7 @@ module github.com/wuchunfu/JobFlow
 go 1.16
 
 require (
-	github.com/fsnotify/fsnotify v1.5.1
+	github.com/fsnotify/fsnotify v1.5.4
 	github.com/gin-contrib/sessions v0.0.4
 	github.com/gin-gonic/gin v1.7.4
 	github.com/golang-jwt/jwt v3.2.2+incompatible
@@ -27,6 +27,6 @@ require (
 	gopkg.in/fsnotify.v1 v1.4.7 // indirect
 	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
 	gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7 // indirect
-	gorm.io/driver/mysql v1.1.2
-	gorm.io/gorm v1.21.15
+	gorm.io/driver/mysql v1.3.3
+	gorm.io/gorm v1.23.1
 )
