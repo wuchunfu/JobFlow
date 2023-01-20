@@ -3,7 +3,7 @@ module github.com/wuchunfu/JobFlow
 go 1.16
 
 require (
-	github.com/fsnotify/fsnotify v1.5.1
+	github.com/fsnotify/fsnotify v1.6.0
 	github.com/gin-contrib/sessions v0.0.4
 	github.com/gin-gonic/gin v1.7.4
 	github.com/golang-jwt/jwt v3.2.2+incompatible
@@ -13,16 +13,16 @@ require (
 	github.com/jonboulle/clockwork v0.1.0 // indirect
 	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible
 	github.com/lestrrat-go/strftime v1.0.4 // indirect
-	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
+	github.com/pelletier/go-toml v1.9.4 // indirect
 	github.com/rifflock/lfshook v0.0.0-20180920164130-b9218ef580f5
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/sirupsen/logrus v1.8.1
 	github.com/spf13/cobra v1.2.1
-	github.com/spf13/viper v1.9.0
-	golang.org/x/net v0.0.0-20210503060351-7fd8e65b6420
-	golang.org/x/text v0.3.7
-	google.golang.org/grpc v1.41.0
-	google.golang.org/protobuf v1.27.1
+	github.com/spf13/viper v1.15.0
+	golang.org/x/net v0.4.0
+	golang.org/x/text v0.5.0
+	google.golang.org/grpc v1.52.0
+	google.golang.org/protobuf v1.28.1
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
 	gopkg.in/fsnotify.v1 v1.4.7 // indirect
 	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
